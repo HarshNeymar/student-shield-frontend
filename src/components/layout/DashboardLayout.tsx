@@ -8,7 +8,7 @@ import {
   Phone, ChevronLeft, ChevronRight, LogOut, Menu, BarChart3, Settings, Bell,
   UserCircle, BookOpen, Heart, ClipboardList, CreditCard
 } from "lucide-react";
-
+import { ShieldAlert } from "lucide-react";
 interface NavItem {
   label: string;
   href: string;
@@ -25,24 +25,27 @@ const navItems: Record<string, NavItem[]> = {
   company: [
     { label: "Dashboard", href: "/company", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "Schools", href: "/company/schools", icon: <School className="w-5 h-5" /> },
-    { label: "Teachers", href: "/company/teachers", icon: <Users className="w-5 h-5" /> },
-    { label: "Students", href: "/company/students", icon: <GraduationCap className="w-5 h-5" /> },
+    // { label: "Teachers", href: "/company/teachers", icon: <Users className="w-5 h-5" /> },
+    // { label: "Students", href: "/company/students", icon: <GraduationCap className="w-5 h-5" /> },
     { label: "Payments", href: "/company/payments", icon: <CreditCard className="w-5 h-5" /> },
     { label: "Sessions", href: "/company/sessions", icon: <BookOpen className="w-5 h-5" /> },
+    { label: "Claims", href: "/company/claims", icon: <ShieldAlert className="w-5 h-5" /> },
   ],
   school: [
     { label: "Dashboard", href: "/school", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "Teachers", href: "/school/teachers", icon: <Users className="w-5 h-5" /> },
     { label: "Students", href: "/school/students", icon: <GraduationCap className="w-5 h-5" /> },
     { label: "Payments", href: "/school/payments", icon: <CreditCard className="w-5 h-5" /> },
+      { label: "Claims", href: "/school/claims", icon: <ShieldAlert className="w-5 h-5" /> },
   ],
   teacher: [
     { label: "Dashboard", href: "/teacher", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "My Students", href: "/teacher/students", icon: <GraduationCap className="w-5 h-5" /> },
     { label: "Add Student", href: "/teacher/add-student", icon: <Users className="w-5 h-5" /> },
     { label: "Wellness Reports", href: "/teacher/wellness", icon: <Heart className="w-5 h-5" /> },
-    { label: "Raise Claim", href: "/teacher/claims", icon: <ClipboardList className="w-5 h-5" /> },
+    // { label: "Raise Claim", href: "/teacher/claims", icon: <ClipboardList className="w-5 h-5" /> },
     { label: "Contact Us", href: "/teacher/contact", icon: <Phone className="w-5 h-5" /> },
+      { label: "Claims", href: "/teacher/claims", icon: <ShieldAlert className="w-5 h-5" /> },
   ],
   student: [
     { label: "Dashboard", href: "/student", icon: <LayoutDashboard className="w-5 h-5" /> },
@@ -50,6 +53,7 @@ const navItems: Record<string, NavItem[]> = {
     { label: "Smart Buddy", href: "/student/smart-buddy", icon: <UserCircle className="w-5 h-5" /> },
     { label: "Wellness", href: "/student/wellness", icon: <Heart className="w-5 h-5" /> },
     { label: "Sessions", href: "/student/sessions", icon: <BookOpen className="w-5 h-5" /> },
+      { label: "Claims", href: "/student/claims", icon: <ShieldAlert className="w-5 h-5" /> },
   ],
 };
 

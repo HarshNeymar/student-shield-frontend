@@ -335,6 +335,9 @@ const data = await api.createStudent({
                   <SelectItem value="installment">
                     Installment Payment
                   </SelectItem>
+                   <SelectItem value="paid_with_fees">
+                    Paid with Fees
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -350,11 +353,8 @@ const data = await api.createStudent({
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="online">Online</SelectItem>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
+                  <SelectItem value="cash">Cash</SelectItem>    
                   <SelectItem value="upi">UPI</SelectItem>
-                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                  <SelectItem value="cheque">Cheque</SelectItem>
                 </SelectContent>
               </Select>
             </div>

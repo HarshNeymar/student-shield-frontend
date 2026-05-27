@@ -47,7 +47,8 @@ export const api = {
   companySessions: () => request<any[]>('/api/company/sessions'),
   createCompanySession: (formData: FormData) => request<any>('/api/company/sessions', { method: 'POST', body: formData }),
   sessionRecordingUrl: (path: string) => request<{ signedUrl: string }>(`/api/company/sessions/recording-url?path=${encodeURIComponent(path)}`),
-
+companySchoolOverview: (schoolId: string) =>
+  request<any>(`/api/company/schools/${schoolId}/overview`),
   schoolDashboard: (schoolId: string) => request<any>(`/api/school/dashboard?schoolId=${encodeURIComponent(schoolId)}`),
   schoolStudents: (schoolId: string) => request<any[]>(`/api/school/students?schoolId=${encodeURIComponent(schoolId)}`),
   schoolTeachers: (schoolId: string) => request<any[]>(`/api/school/teachers?schoolId=${encodeURIComponent(schoolId)}`),
@@ -59,9 +60,46 @@ export const api = {
   teacherDashboard: () => request<any>('/api/teacher/dashboard'),
   teacherStudents: () => request<any[]>('/api/teacher/students'),
   createStudent: (body: any) => request<any>('/api/teacher/students', { method: 'POST', body: JSON.stringify(body) }),
-  teacherClaims: () => request<any[]>('/api/teacher/claims'),
   createTeacherClaim: (body: any) => request<any>('/api/teacher/claims', { method: 'POST', body: JSON.stringify(body) }),
   submitTeacherContact: (body: any) => request<any>('/api/teacher/contact', { method: 'POST', body: JSON.stringify(body) }),
   teacherWellnessStudents: () => request<any[]>('/api/teacher/wellness/students'),
   submitWellnessReport: (body: any) => request<any>('/api/teacher/wellness', { method: 'POST', body: JSON.stringify(body) }),
+  studentClaims: () => request<any[]>("/api/student/claims"),
+
+raiseStudentClaim: (body: any) =>
+  request<any>("/api/student/claims", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
+
+teacherClaims: () => request<any[]>("/api/teacher/claims"),
+
+raiseTeacherClaim: (body: any) =>
+  request<any>("/api/teacher/claims", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
+
+schoolClaims: () => request<any[]>("/api/school/claims"),
+
+raiseSchoolClaim: (body: any) =>
+  request<any>("/api/school/claims", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
+
+companyClaims: () => request<any[]>("/api/company/claims"),
+
+updateCompanyClaimStatus: (claimId: string, status: string) =>
+  request<any>(`/api/company/claims/${claimId}/status`, {
+    method: "PATCH",
+    body: JSON.stringify({ status }),
+  }),
+//   schoolClaims: () => request<any[]>("/api/school/claims"),
+
+// raiseSchoolClaim: (body: any) =>
+//   request<any>("/api/school/claims", {
+//     method: "POST",
+//     body: JSON.stringify(body),
+//   }),
 };

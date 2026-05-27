@@ -21,12 +21,14 @@ import SchoolPayments from "./pages/school/Payments";
 import TeacherDashboard from "./pages/teacher/TeacherDashboard";
 import AddStudent from "./pages/teacher/AddStudent";
 import WellnessReport from "./pages/teacher/WellnessReport";
-import Claims from "./pages/teacher/Claims";
 import MyStudents from "./pages/teacher/MyStudents";
 import ContactUs from "./pages/teacher/ContactUs";
 import StudentDashboard from "./pages/student/StudentDashboard";
 import NotFound from "./pages/NotFound";
-
+import StudentRaiseClaim from "./pages/student/RaiseClaim";
+import TeacherRaiseClaim from "./pages/teacher/RaiseClaim";
+import CompanyClaims from "./pages/company/Claims";
+import SchoolRaiseClaim from "./pages/school/RaiseClaim";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -58,10 +60,12 @@ const App = () => (
             <Route path="/teacher/students" element={<ProtectedRoute allow={["teacher"]}><MyStudents /></ProtectedRoute>} />
             <Route path="/teacher/contact" element={<ProtectedRoute allow={["teacher"]}><ContactUs /></ProtectedRoute>} />
             <Route path="/teacher/wellness" element={<ProtectedRoute allow={["teacher"]}><WellnessReport /></ProtectedRoute>} />
-            <Route path="/teacher/claims" element={<ProtectedRoute allow={["teacher"]}><Claims /></ProtectedRoute>} />
 
             <Route path="/student" element={<ProtectedRoute allow={["student"]}><StudentDashboard /></ProtectedRoute>} />
-
+<Route path="/student/claims" element={<StudentRaiseClaim />} />
+<Route path="/teacher/claims" element={<TeacherRaiseClaim />} />
+<Route path="/company/claims" element={<CompanyClaims />} />
+<Route path="/school/claims" element={<SchoolRaiseClaim />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
