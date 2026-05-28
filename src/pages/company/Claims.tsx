@@ -56,6 +56,7 @@ export default function CompanyClaims() {
                       <th className="text-left p-3">Raised By</th>
                       <th className="text-left p-3">Title</th>
                       <th className="text-left p-3">Amount</th>
+                      <th className="text-left p-3">Documents</th>
                       <th className="text-left p-3">Status</th>
                       <th className="text-left p-3">Action</th>
                     </tr>
@@ -96,11 +97,33 @@ export default function CompanyClaims() {
                             ₹{Number(claim.amount ?? 0).toLocaleString()}
                           </td>
 
+                          
+                          <td className="p-3">
+  {(claim.documents ?? []).length ? (
+    <div className="space-y-1">
+      {claim.documents.map((doc: any) => (
+        <a
+          key={doc.id}
+          href={doc.signed_url}
+          target="_blank"
+          rel="noreferrer"
+          className="block text-primary underline text-xs"
+        >
+          {doc.file_name}
+        </a>
+      ))}
+    </div>
+  ) : (
+    "—"
+  )}
+</td>
+
                           <td className="p-3">
                             <span className="rounded-full bg-muted px-2 py-1 text-xs">
                               {claim.status}
                             </span>
                           </td>
+
 
                           <td className="p-3 min-w-[180px]">
                             <Select

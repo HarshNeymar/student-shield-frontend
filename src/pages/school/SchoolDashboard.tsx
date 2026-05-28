@@ -4,6 +4,7 @@ import { Users, GraduationCap, CreditCard, BarChart3 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import { Card, CardContent } from "@/components/ui/card";
 
 export default function SchoolDashboard() {
   const { profile } = useAuth();
@@ -45,7 +46,20 @@ export default function SchoolDashboard() {
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="Teachers" value={stats?.teachers ?? 0} icon={<Users className="w-5 h-5" />} />
           <StatCard title="Students" value={stats?.students ?? 0} icon={<GraduationCap className="w-5 h-5" />} />
-          <StatCard title="Active Plans" value={students.filter((s: any) => s.payment_status !== "failed").length} icon={<CreditCard className="w-5 h-5" />} />
+<Card>
+  <CardContent className="p-6 flex items-center justify-between">
+    <div>
+      <p className="text-muted-foreground font-medium">Assigned Plan</p>
+      <h3 className="text-2xl font-bold mt-2">
+        {school?.selected_plan_tier ?? "Basic Plan"}
+      </h3>
+    </div>
+
+    <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+      <CreditCard className="w-6 h-6 text-primary" />
+    </div>
+  </CardContent>
+</Card>
           {/* <StatCard title="Revenue" value={`₹${(stats?.revenue ?? 0).toLocaleString()}`} icon={<BarChart3 className="w-5 h-5" />} /> */}
         </div>
 

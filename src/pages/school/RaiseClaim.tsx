@@ -16,10 +16,11 @@ import { Loader2, ShieldAlert } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function SchoolRaiseClaim() {
   const qc = useQueryClient();
-
+const [documents, setDocuments] = useState<File[]>([]);
   const [form, setForm] = useState({
     student_id: "",
     title: "",
@@ -29,10 +30,12 @@ export default function SchoolRaiseClaim() {
   });
 
   const [busy, setBusy] = useState(false);
+const { profile } = useAuth();
+  const schoolId = profile?.school_id;
 
   const { data: students, isLoading: studentsLoading } = useQuery({
     queryKey: ["school-students"],
-    queryFn: api.schoolStudents,
+    queryFn: () => api.schoolStudents(schoolId!),
   });
 
   const { data: claims, isLoading: claimsLoading } = useQuery({
@@ -61,6 +64,7 @@ export default function SchoolRaiseClaim() {
         description: form.description,
         claim_reason: form.claim_reason,
         amount: Number(form.amount || 0),
+          documents,
       });
 
       toast.success("Claim raised successfully");
@@ -183,6 +187,29 @@ export default function SchoolRaiseClaim() {
                 placeholder="Enter claim details"
               />
             </div>
+
+            <div>
+  <Label>Supporting Documents</Label>
+  <Input
+    type="file"
+    multiple
+    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+    onChange={(e) => setDocuments(Array.from(e.target.files ?? []))}
+  />
+  <p className="text-xs text-muted-foreground mt-1">
+    You can upload up to 5 files. PDF, image, DOC, and DOCX are allowed.
+  </p>
+
+  {documents.length > 0 && (
+    <div className="mt-2 space-y-1">
+      {documents.map((file) => (
+        <p key={file.name} className="text-xs text-muted-foreground">
+          {file.name}
+        </p>
+      ))}
+    </div>
+  )}
+</div>
 
             <Button
               onClick={submit}

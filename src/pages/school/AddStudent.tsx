@@ -16,16 +16,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CheckCircle, Loader2, MessageCircle, ReceiptText } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
-import { useAuth } from "@/contexts/AuthContext";
 
-const planOptions: Record<
-  string,
-  {
-    id: string;
-    label: string;
-    amount: number;
-  }
-> = {
+const planOptions: Record<string, { id: string; label: string; amount: number }> = {
   basic: {
     id: "basic",
     label: "Basic Plan",
@@ -43,9 +35,7 @@ const planOptions: Record<
   },
 };
 
-export default function AddStudent() {
-  const { profile } = useAuth();
-
+export default function SchoolAddStudent() {
   const [form, setForm] = useState({
     full_name: "",
     parent_phone: "",
@@ -63,12 +53,12 @@ export default function AddStudent() {
   const [busy, setBusy] = useState(false);
   const [enrolled, setEnrolled] = useState<any | null>(null);
 
-  const { data: teacherPlanData, isLoading: planLoading } = useQuery({
-    queryKey: ["teacher-assigned-plan"],
-    queryFn: api.teacherAssignedPlan,
+  const { data: schoolPlanData, isLoading: planLoading } = useQuery({
+    queryKey: ["school-assigned-plan"],
+    queryFn: api.schoolAssignedPlan,
   });
 
-  const assignedPlanId = teacherPlanData?.selected_plan_tier ?? "basic";
+  const assignedPlanId = schoolPlanData?.selected_plan_tier ?? "basic";
   const assignedPlan = planOptions[assignedPlanId] ?? planOptions.basic;
   const amount = assignedPlan.amount;
 
@@ -77,15 +67,6 @@ export default function AddStudent() {
 
   const remainingAmount =
     form.payment_type === "installment" ? amount / 2 : 0;
-
-  useEffect(() => {
-    if (profile?.class_assigned) {
-      setForm((prev) => ({
-        ...prev,
-        class_assigned: profile.class_assigned ?? "",
-      }));
-    }
-  }, [profile?.class_assigned]);
 
   useEffect(() => {
     if (assignedPlanId) {
@@ -97,11 +78,11 @@ export default function AddStudent() {
   }, [assignedPlanId]);
 
   const resetForm = () => {
-    setForm((prev) => ({
-      ...prev,
+    setForm({
       full_name: "",
       parent_phone: "",
       age: "",
+      class_assigned: "",
       username: "",
       password: "",
       plan: assignedPlanId,
@@ -109,7 +90,7 @@ export default function AddStudent() {
       payment_mode: "online",
       install1: "",
       install2: "",
-    }));
+    });
   };
 
   const submit = async () => {
@@ -123,9 +104,9 @@ export default function AddStudent() {
       !form.parent_phone ||
       !form.username ||
       !form.password ||
+      !form.class_assigned ||
       !form.payment_type ||
-      !form.payment_mode ||
-      !form.class_assigned
+      !form.payment_mode
     ) {
       toast.error("Please fill all required fields");
       return;
@@ -142,7 +123,7 @@ export default function AddStudent() {
     setBusy(true);
 
     try {
-      const data = await api.createStudent({
+      const data = await api.createSchoolStudent({
         full_name: form.full_name,
         username: form.username,
         password: form.password,
@@ -150,17 +131,11 @@ export default function AddStudent() {
         parent_phone: form.parent_phone,
         class_assigned: form.class_assigned,
 
-        // Company Admin assigned plan only
         plan: assignedPlanId,
         plan_tier: assignedPlanId,
         amount: assignedPlan.amount,
 
-        // DB payment method enum:
-        // online / cash / card / upi / bank_transfer / cheque
         payment_mode: form.payment_mode,
-
-        // Business payment flow:
-        // one_time / installment
         payment_type: form.payment_type,
 
         paid_amount: paidAmount,
@@ -172,7 +147,7 @@ export default function AddStudent() {
       });
 
       setEnrolled(data);
-      toast.success("Student enrolled and WhatsApp notification prepared");
+      toast.success("Student enrolled successfully");
     } catch (error: any) {
       toast.error(error.message ?? "Failed to enroll student");
     } finally {
@@ -182,7 +157,7 @@ export default function AddStudent() {
 
   if (enrolled) {
     return (
-      <DashboardLayout role="teacher">
+      <DashboardLayout role="school">
         <div className="flex items-center justify-center min-h-[60vh]">
           <Card className="w-full max-w-2xl">
             <CardContent className="p-8 text-center space-y-5">
@@ -194,7 +169,6 @@ export default function AddStudent() {
                 <h2 className="text-2xl font-bold">
                   Student Enrolled Successfully
                 </h2>
-
                 <p className="text-muted-foreground mt-2">
                   Login email:{" "}
                   <span className="font-mono">
@@ -208,11 +182,9 @@ export default function AddStudent() {
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <ReceiptText className="w-3 h-3" /> Receipt
                   </p>
-
                   <p className="font-semibold">
                     {enrolled.receipt?.receipt_no ?? "Generated"}
                   </p>
-
                   <p className="text-sm">
                     Paid ₹
                     {Number(
@@ -229,11 +201,9 @@ export default function AddStudent() {
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <MessageCircle className="w-3 h-3" /> WhatsApp
                   </p>
-
                   <p className="font-semibold">
                     {enrolled.whatsapp?.status ?? "prepared"}
                   </p>
-
                   <p className="text-sm">
                     Message includes receipt, app link and login details.
                   </p>
@@ -241,8 +211,8 @@ export default function AddStudent() {
               </div>
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Link to="/teacher/students">
-                  <Button variant="outline">View My Students</Button>
+                <Link to="/school/students">
+                  <Button variant="outline">View Students</Button>
                 </Link>
 
                 <Button
@@ -262,13 +232,12 @@ export default function AddStudent() {
   }
 
   return (
-    <DashboardLayout role="teacher">
+    <DashboardLayout role="school">
       <div className="max-w-2xl mx-auto space-y-6">
         <div>
           <h1 className="text-2xl font-bold">Add New Student</h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Enroll a student, collect payment details, create login and send
-            parent confirmation.
+            School admin can enroll a student in any class.
           </p>
         </div>
 
@@ -312,15 +281,14 @@ export default function AddStudent() {
               </div>
 
               <div>
-                <Label>Assigned Class *</Label>
+                <Label>Class *</Label>
                 <Input
                   value={form.class_assigned}
-                  readOnly={!!profile?.class_assigned}
                   onChange={(e) =>
                     setForm({ ...form, class_assigned: e.target.value })
                   }
                   className="mt-1.5"
-                  placeholder="e.g. 1st - 2nd"
+                  placeholder="e.g. 2-A, 3rd, 5th-B"
                 />
               </div>
             </div>
@@ -343,17 +311,15 @@ export default function AddStudent() {
                     Loading assigned plan...
                   </div>
                 ) : (
-                 <>
-  <p className="font-semibold">{assignedPlan.label}</p>
-  <p className="text-xs text-muted-foreground mt-1">
-    This plan is assigned by Company Admin.
-  </p>
-</>
+                  <>
+                    <p className="font-semibold">{assignedPlan.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This plan is assigned by Company Admin.
+                    </p>
+                  </>
                 )}
               </div>
             </div>
-
-         
 
             <div>
               <Label>Payment Type *</Label>
@@ -389,6 +355,8 @@ export default function AddStudent() {
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="card">Card</SelectItem>
                   <SelectItem value="upi">UPI</SelectItem>
+                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="cheque">Cheque</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -418,14 +386,6 @@ export default function AddStudent() {
                     className="mt-1.5"
                   />
                 </div>
-
-                <p className="sm:col-span-2 text-sm text-muted-foreground">
-                  Installment amount:{" "}
-                  <span className="font-semibold">
-                    ₹{(amount / 2).toLocaleString()}
-                  </span>{" "}
-                  each
-                </p>
               </div>
             )}
           </CardContent>

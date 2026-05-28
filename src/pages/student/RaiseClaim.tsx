@@ -12,7 +12,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 export default function StudentRaiseClaim() {
   const qc = useQueryClient();
-
+const [documents, setDocuments] = useState<File[]>([]);
   const [form, setForm] = useState({
     title: "",
     description: "",
@@ -41,11 +41,12 @@ export default function StudentRaiseClaim() {
 
     try {
       await api.raiseStudentClaim({
-        title: form.title,
-        description: form.description,
-        claim_reason: form.claim_reason,
-        amount: Number(form.amount || 0),
-      });
+  title: form.title,
+  description: form.description,
+  claim_reason: form.claim_reason,
+  amount: Number(form.amount || 0),
+  documents,
+});
 
       toast.success("Claim raised successfully");
       setForm({
@@ -134,6 +135,29 @@ export default function StudentRaiseClaim() {
                 }
               />
             </div>
+
+            <div>
+  <Label>Supporting Documents</Label>
+  <Input
+    type="file"
+    multiple
+    accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+    onChange={(e) => setDocuments(Array.from(e.target.files ?? []))}
+  />
+  <p className="text-xs text-muted-foreground mt-1">
+    You can upload up to 5 files. PDF, image, DOC, and DOCX are allowed.
+  </p>
+
+  {documents.length > 0 && (
+    <div className="mt-2 space-y-1">
+      {documents.map((file) => (
+        <p key={file.name} className="text-xs text-muted-foreground">
+          {file.name}
+        </p>
+      ))}
+    </div>
+  )}
+</div>
 
             <Button onClick={submit} disabled={busy || !!activeClaim}>
               {busy && <Loader2 className="w-4 h-4 animate-spin mr-2" />}

@@ -5,6 +5,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -36,6 +43,7 @@ type SchoolRow = {
   contact_email?: string | null;
   contact_phone?: string | null;
   admin_user_id?: string | null;
+  selected_plan_tier?: "basic" | "standard" | "premium" | null;
   teacher_count?: number;
   student_count?: number;
 };
@@ -65,6 +73,27 @@ export default function SchoolsManage() {
     queryKey: ["schools-manage"],
     queryFn: api.companySchools,
   });
+
+  const updateSchoolPlan = useMutation({
+  mutationFn: ({
+    schoolId,
+    selectedPlan,
+  }: {
+    schoolId: string;
+    selectedPlan: string;
+  }) => api.updateCompanySchoolPlan(schoolId, selectedPlan),
+  onSuccess: () => {
+    toast.success("School plan updated");
+    qc.invalidateQueries({ queryKey: ["schools-manage"] });
+
+    if (selectedSchoolId) {
+      qc.invalidateQueries({
+        queryKey: ["company-school-overview", selectedSchoolId],
+      });
+    }
+  },
+  onError: (e: any) => toast.error(e.message),
+});
 
   const selectedSchool = useMemo(() => {
     return (
@@ -265,6 +294,33 @@ export default function SchoolsManage() {
                     </div>
                   </div>
 
+                  <div
+  className="pt-3"
+  onClick={(e) => e.stopPropagation()}
+>
+  <Label className="text-xs">Assigned Plan</Label>
+
+  <Select
+    value={s.selected_plan_tier ?? "basic"}
+    onValueChange={(value) =>
+      updateSchoolPlan.mutate({
+        schoolId: s.id,
+        selectedPlan: value,
+      })
+    }
+  >
+    <SelectTrigger className="mt-1">
+      <SelectValue placeholder="Select plan" />
+    </SelectTrigger>
+
+    <SelectContent>
+      <SelectItem value="basic">Basic Plan — ₹400 yearly</SelectItem>
+      <SelectItem value="standard">Standard Plan — ₹800 yearly</SelectItem>
+      <SelectItem value="premium">Premium Plan — ₹1200 yearly</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
+
                   {s.admin_user_id ? (
                     <span className="inline-block text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 mt-2">
                       Admin assigned
@@ -440,6 +496,8 @@ export default function SchoolsManage() {
                       </p>
                     </div>
                   </div>
+
+
 
                   <div>
   <h3 className="font-semibold mb-3 flex items-center gap-2">

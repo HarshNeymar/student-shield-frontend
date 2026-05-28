@@ -6,7 +6,8 @@ import { useAuth } from "@/contexts/AuthContext";
 import {
   Shield, LayoutDashboard, School, Users, GraduationCap, FileText,
   Phone, ChevronLeft, ChevronRight, LogOut, Menu, BarChart3, Settings, Bell,
-  UserCircle, BookOpen, Heart, ClipboardList, CreditCard
+  UserCircle, BookOpen, Heart, ClipboardList, CreditCard,
+  UserPlus
 } from "lucide-react";
 import { ShieldAlert } from "lucide-react";
 interface NavItem {
@@ -34,9 +35,15 @@ const navItems: Record<string, NavItem[]> = {
   school: [
     { label: "Dashboard", href: "/school", icon: <LayoutDashboard className="w-5 h-5" /> },
     { label: "Teachers", href: "/school/teachers", icon: <Users className="w-5 h-5" /> },
+    {
+  label: "Add Student",
+  href: "/school/add-student",
+  icon: <UserPlus className="w-5 h-5" />,
+},
     { label: "Students", href: "/school/students", icon: <GraduationCap className="w-5 h-5" /> },
     { label: "Payments", href: "/school/payments", icon: <CreditCard className="w-5 h-5" /> },
       { label: "Claims", href: "/school/claims", icon: <ShieldAlert className="w-5 h-5" /> },
+
   ],
   teacher: [
     { label: "Dashboard", href: "/teacher", icon: <LayoutDashboard className="w-5 h-5" /> },

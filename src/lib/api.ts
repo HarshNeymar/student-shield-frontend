@@ -31,6 +31,49 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return payload as T;
 }
 
+
+
+async function requestForm<T>(path: string, formData: FormData): Promise<T> {
+  const { data } = await supabase.auth.getSession();
+  const token = data.session?.access_token;
+console.log(formData)
+  const res = await fetch(`${API_BASE_URL}${path}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+    body: formData,
+  });
+
+  const data1 = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(data1?.error ?? "Request failed");
+  }
+
+  return data1;
+}
+
+function buildClaimFormData(body: any) {
+  const formData = new FormData();
+
+  Object.entries(body).forEach(([key, value]) => {
+    if (key === "documents") return;
+
+    if (value !== undefined && value !== null) {
+      formData.append(key, String(value));
+    }
+  });
+
+  const documents = body.documents ?? [];
+
+  for (const file of documents) {
+    formData.append("documents", file);
+  }
+
+  return formData;
+}
+
 export const api = {
   me: () => request<{ profile: any; role: any }>('/api/auth/me'),
   companyAdminExists: () => request<{ exists: boolean; count: number }>('/api/onboarding/company-admin-exists'),
@@ -66,27 +109,20 @@ companySchoolOverview: (schoolId: string) =>
   submitWellnessReport: (body: any) => request<any>('/api/teacher/wellness', { method: 'POST', body: JSON.stringify(body) }),
   studentClaims: () => request<any[]>("/api/student/claims"),
 
-raiseStudentClaim: (body: any) =>
-  request<any>("/api/student/claims", {
-    method: "POST",
-    body: JSON.stringify(body),
-  }),
+
 
 teacherClaims: () => request<any[]>("/api/teacher/claims"),
 
-raiseTeacherClaim: (body: any) =>
-  request<any>("/api/teacher/claims", {
-    method: "POST",
-    body: JSON.stringify(body),
-  }),
 
 schoolClaims: () => request<any[]>("/api/school/claims"),
+raiseStudentClaim: (body: any) =>
+  requestForm<any>("/api/student/claims", buildClaimFormData(body)),
+
+raiseTeacherClaim: (body: any) =>
+  requestForm<any>("/api/teacher/claims", buildClaimFormData(body)),
 
 raiseSchoolClaim: (body: any) =>
-  request<any>("/api/school/claims", {
-    method: "POST",
-    body: JSON.stringify(body),
-  }),
+  requestForm<any>("/api/school/claims", buildClaimFormData(body)),
 
 companyClaims: () => request<any[]>("/api/company/claims"),
 
@@ -95,11 +131,19 @@ updateCompanyClaimStatus: (claimId: string, status: string) =>
     method: "PATCH",
     body: JSON.stringify({ status }),
   }),
-//   schoolClaims: () => request<any[]>("/api/school/claims"),
+updateCompanySchoolPlan: (schoolId: string, selected_plan_tier: string) =>
+  request<any>(`/api/company/schools/${schoolId}/plan`, {
+    method: "PUT",
+    body: JSON.stringify({ selected_plan_tier }),
+  }),
 
-// raiseSchoolClaim: (body: any) =>
-//   request<any>("/api/school/claims", {
-//     method: "POST",
-//     body: JSON.stringify(body),
-//   }),
+schoolAssignedPlan: () => request<any>("/api/school/plan"),
+
+teacherAssignedPlan: () => request<any>("/api/teacher/plan"),
+
+createSchoolStudent: (body: any) =>
+  request<any>("/api/school/students", {
+    method: "POST",
+    body: JSON.stringify(body),
+  }),
 };
