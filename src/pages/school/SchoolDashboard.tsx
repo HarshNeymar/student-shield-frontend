@@ -64,7 +64,7 @@ export default function SchoolDashboard() {
         </div>
 
 
-        <div className="grid lg:grid-cols-3 gap-4">
+        {/* <div className="grid lg:grid-cols-3 gap-4">
           <div className="bg-card rounded-xl border border-border shadow-card p-5">
             <h2 className="font-semibold mb-3">Class-wise Student Count</h2>
             <div className="space-y-2">
@@ -92,7 +92,7 @@ export default function SchoolDashboard() {
               {Object.keys(teacherStudentMap).length === 0 && <p className="text-sm text-muted-foreground">No mapping yet.</p>}
             </div>
           </div>
-        </div>
+        </div> */}
 
         <div className="bg-card rounded-xl border border-border shadow-card">
           <div className="p-5 border-b border-border"><h2 className="font-semibold">Teachers</h2></div>
@@ -115,10 +115,10 @@ export default function SchoolDashboard() {
         <div className="bg-card rounded-xl border border-border shadow-card p-5">
           <h2 className="font-semibold mb-4">Payment Overview</h2>
           <div className="grid sm:grid-cols-2 gap-4">
-            <div className="bg-success/10 rounded-lg p-4">
+            {/* <div className="bg-success/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Collected</p>
               <p className="text-2xl font-bold text-success">₹{(payments?.paid ?? 0).toLocaleString()}</p>
-            </div>
+            </div> */}
             <div className="bg-warning/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Pending</p>
               <p className="text-2xl font-bold text-warning">₹{(payments?.pending ?? 0).toLocaleString()}</p>

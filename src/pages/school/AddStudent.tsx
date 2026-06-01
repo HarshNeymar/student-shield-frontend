@@ -313,9 +313,7 @@ export default function SchoolAddStudent() {
                 ) : (
                   <>
                     <p className="font-semibold">{assignedPlan.label}</p>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      This plan is assigned by Company Admin.
-                    </p>
+                 
                   </>
                 )}
               </div>
@@ -336,6 +334,9 @@ export default function SchoolAddStudent() {
                   <SelectItem value="installment">
                     Installment Payment
                   </SelectItem>
+                  <SelectItem value="paid_with_fees">
+                    Paid with Fees
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -355,8 +356,6 @@ export default function SchoolAddStudent() {
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="card">Card</SelectItem>
                   <SelectItem value="upi">UPI</SelectItem>
-                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-                  <SelectItem value="cheque">Cheque</SelectItem>
                 </SelectContent>
               </Select>
             </div>
