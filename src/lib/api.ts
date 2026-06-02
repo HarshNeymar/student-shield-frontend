@@ -146,4 +146,21 @@ createSchoolStudent: (body: any) =>
     method: "POST",
     body: JSON.stringify(body),
   }),
+
+  // studentDashboard: () => request<any>("/api/student/dashboard"),
+
+studentWellnessReports: () =>
+  request<any[]>("/api/student/wellness-reports"),
+
+studentSessions: () => request<any[]>("/api/student/sessions"),
+
+studentSessionRecordingUrl: (sessionId: string) =>
+  request<any>(`/api/student/sessions/${sessionId}/recording-url`),
+
+// studentClaims: () => request<any[]>("/api/student/claims"),
+
+studentMyClaims: () => request<any[]>("/api/student/my-claims"),
+
+// raiseStudentClaim: (body: any) =>
+//   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
 };

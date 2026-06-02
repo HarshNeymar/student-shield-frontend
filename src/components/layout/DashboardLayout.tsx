@@ -56,11 +56,18 @@ const navItems: Record<string, NavItem[]> = {
   ],
   student: [
     { label: "Dashboard", href: "/student", icon: <LayoutDashboard className="w-5 h-5" /> },
-    { label: "My Benefits", href: "/student/benefits", icon: <Shield className="w-5 h-5" /> },
+    // { label: "My Benefits", href: "/student/benefits", icon: <Shield className="w-5 h-5" /> },
     { label: "Smart Buddy", href: "/student/smart-buddy", icon: <UserCircle className="w-5 h-5" /> },
-    { label: "Wellness", href: "/student/wellness", icon: <Heart className="w-5 h-5" /> },
+    { label: "Wellness", href: "/student/wellness-reports", icon: <Heart className="w-5 h-5" /> },
     { label: "Sessions", href: "/student/sessions", icon: <BookOpen className="w-5 h-5" /> },
-      { label: "Claims", href: "/student/claims", icon: <ShieldAlert className="w-5 h-5" /> },
+    { label: "Claims", href: "/student/claims", icon: <ShieldAlert className="w-5 h-5" /> },
+
+
+// {
+//   label: "Claim Status",
+//   href: "/student/claim-status",
+//  icon: <ShieldAlert className="w-5 h-5" />,
+// },
   ],
 };
 

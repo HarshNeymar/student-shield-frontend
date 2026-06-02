@@ -23,14 +23,18 @@ import AddStudent from "./pages/teacher/AddStudent";
 import WellnessReport from "./pages/teacher/WellnessReport";
 import MyStudents from "./pages/teacher/MyStudents";
 import ContactUs from "./pages/teacher/ContactUs";
-import StudentDashboard from "./pages/student/StudentDashboard";
 import NotFound from "./pages/NotFound";
-import StudentRaiseClaim from "./pages/student/RaiseClaim";
 import TeacherRaiseClaim from "./pages/teacher/RaiseClaim";
 import CompanyClaims from "./pages/company/Claims";
 import SchoolRaiseClaim from "./pages/school/RaiseClaim";
 import SchoolPaymentPlans from "./pages/school/PaymentPlan";
 import SchoolAddStudent from "./pages/school/AddStudent";
+import StudentDashboard from "./pages/student/StudentDashboard";
+import StudentWellnessReports from "./pages/student/WellnessReport";
+import StudentSessions from "./pages/student/Sessions";
+import SmartBuddy from "./pages/student/SmartBuddy";
+import StudentClaimStatus from "./pages/student/ClaimStatus";
+import StudentRaiseClaim from "./pages/student/RaiseClaim";
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -69,6 +73,10 @@ const App = () => (
 <Route path="/company/claims" element={<CompanyClaims />} />
 <Route path="/school/claims" element={<SchoolRaiseClaim />} />
 <Route path="/school/payment-plans" element={<SchoolPaymentPlans />} />
+<Route path="/student/wellness-reports" element={<StudentWellnessReports />} />
+<Route path="/student/sessions" element={<StudentSessions />} />
+<Route path="/student/smart-buddy" element={<SmartBuddy />} />
+<Route path="/student/claim-status" element={<StudentClaimStatus />} />
             <Route path="*" element={<NotFound />} />
 
           </Routes>

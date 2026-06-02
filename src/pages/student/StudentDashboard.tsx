@@ -1,90 +1,180 @@
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Shield, CheckCircle, Heart, BookOpen, BarChart3 } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
+import { Button } from "@/components/ui/button";
+import {
+  ShieldCheck,
+  PiggyBank,
+  HeartPulse,
+  Bot,
+  FileText,
+  Video,
+  Loader2,
+  School,
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 
 export default function StudentDashboard() {
-  const { user, profile } = useAuth();
-
-  const { data: dashboard } = useQuery({
-    queryKey: ["student-dashboard", user?.id],
-    enabled: !!user,
+  const { data, isLoading } = useQuery({
+    queryKey: ["student-dashboard"],
     queryFn: api.studentDashboard,
   });
 
-  const enrollment = dashboard?.enrollment;
-  const reports = dashboard?.reports ?? [];
-  const sessions = dashboard?.sessions ?? [];
+  if (isLoading) {
+    return (
+      <DashboardLayout role="student">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </DashboardLayout>
+    );
+  }
+
+  const studentName = data?.profile?.full_name ?? "Student";
 
   return (
     <DashboardLayout role="student">
       <div className="space-y-6">
-        <div className="gradient-primary rounded-2xl p-6 text-primary-foreground">
-          <h1 className="text-2xl font-bold">Welcome, {profile?.full_name?.split(" ")[0] ?? "Student"}! 👋</h1>
-          <p className="text-primary-foreground/80 mt-1">
-            {enrollment ? `Active plan: ${enrollment.plan.toUpperCase()}` : "No active enrollment yet."}
+        <div>
+          <h1 className="text-2xl font-bold">
+            Welcome, {studentName} to the Student Shield Program.
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            {data?.school?.name ?? "Your School"} · Class{" "}
+            {data?.profile?.class_assigned ?? "—"}
           </p>
         </div>
 
-        {enrollment && (
-          <div className="grid sm:grid-cols-3 gap-4">
-            {benefits.map((b, i) => (
-              <Card key={i} className="border-success/20">
-                <CardContent className="flex items-center gap-3 p-4">
-                  <div className="w-10 h-10 rounded-lg bg-success/15 flex items-center justify-center text-success">{b.icon}</div>
-                  <div>
-                    <p className="font-medium text-sm">{b.name}</p>
-                    <p className="text-xs text-success font-medium flex items-center gap-1"><CheckCircle className="w-3 h-3" /> Activated</p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">Accidental Protection</p>
+                <p className="text-sm text-green-600">Activated</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <PiggyBank className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">Future Financial Security</p>
+                <p className="text-sm text-green-600">Activated</p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardContent className="p-5 flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                <HeartPulse className="w-6 h-6 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold">Student Protection</p>
+                <p className="text-sm text-green-600">Activated</p>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
 
         <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><Heart className="w-5 h-5 text-destructive" /> Wellness Reports</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {reports?.map((r: any) => {
-                const overall = ((r.behavioral + r.emotional + r.academic + r.participation + r.health) / 5).toFixed(1);
-                return (
-                  <div key={r.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/50">
-                    <div>
-                      <p className="text-sm font-medium">{new Date(r.created_at).toLocaleDateString()}</p>
-                      <p className="text-xs text-muted-foreground">By: {r.teacher?.full_name ?? "Teacher"}</p>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-lg font-bold text-primary">{overall}</p>
-                      <p className="text-xs text-muted-foreground">Overall</p>
-                    </div>
-                  </div>
-                );
-              })}
-              {reports?.length === 0 && <p className="text-sm text-muted-foreground">No wellness reports yet.</p>}
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <School className="w-5 h-5 text-primary" />
+              Enrollment Details
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="grid md:grid-cols-4 gap-4">
+            <div>
+              <p className="text-sm text-muted-foreground">Plan</p>
+              <p className="font-semibold">{data?.plan?.name ?? "—"}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Payment Status</p>
+              <p className="font-semibold">
+                {data?.enrollment?.payment_status ?? "—"}
+              </p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Teacher</p>
+              <p className="font-semibold">{data?.teacher?.full_name ?? "—"}</p>
+            </div>
+
+            <div>
+              <p className="text-sm text-muted-foreground">Benefit Until</p>
+              <p className="font-semibold">
+                {data?.enrollment?.expires_at
+                  ? new Date(data.enrollment.expires_at).toLocaleDateString()
+                  : "—"}
+              </p>
             </div>
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader><CardTitle className="flex items-center gap-2"><BookOpen className="w-5 h-5 text-primary" /> Sessions</CardTitle></CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {sessions?.map(s => (
-                <div key={s.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
-                  <div>
-                    <p className="text-sm font-medium">{s.title}</p>
-                    <p className="text-xs text-muted-foreground">{new Date(s.scheduled_at).toLocaleString()}</p>
-                  </div>
-                  <span className="text-xs px-2 py-1 rounded-full bg-primary/10 text-primary capitalize">{s.status}</span>
-                </div>
-              ))}
-              {sessions?.length === 0 && <p className="text-sm text-muted-foreground">No sessions scheduled.</p>}
-            </div>
-          </CardContent>
-        </Card>
+        <div className="grid md:grid-cols-3 gap-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Bot className="w-5 h-5 text-primary" />
+                Meet Your Smart Buddy
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                Continue your mentorship journey.
+              </p>
+              <Link to="/student/smart-buddy">
+                <Button className="w-full">Start Smart Buddy</Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <FileText className="w-5 h-5 text-primary" />
+                Wellness Reports
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                {data?.counts?.wellnessReports ?? 0} reports available.
+              </p>
+              <Link to="/student/wellness-reports">
+                <Button variant="outline" className="w-full">
+                  View Reports
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Video className="w-5 h-5 text-primary" />
+                Sessions & Programs
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              <p className="text-sm text-muted-foreground">
+                View recent programs and recordings.
+              </p>
+              <Link to="/student/sessions">
+                <Button variant="outline" className="w-full">
+                  View Sessions
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        </div>
       </div>
     </DashboardLayout>
   );
