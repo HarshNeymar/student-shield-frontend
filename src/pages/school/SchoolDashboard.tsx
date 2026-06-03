@@ -60,7 +60,7 @@ export default function SchoolDashboard() {
     </div>
   </CardContent>
 </Card>
-          {/* <StatCard title="Revenue" value={`₹${(stats?.revenue ?? 0).toLocaleString()}`} icon={<BarChart3 className="w-5 h-5" />} /> */}
+          <StatCard title="Total Claims" value={stats?.claims ?? 0} icon={<CreditCard className="w-5 h-5" />} />
         </div>
 
 
@@ -114,7 +114,7 @@ export default function SchoolDashboard() {
 
         <div className="bg-card rounded-xl border border-border shadow-card p-5">
           <h2 className="font-semibold mb-4">Payment Overview</h2>
-          <div className="grid sm:grid-cols-2 gap-4">
+          <div className="grid sm:grid-cols-1 gap-4">
             {/* <div className="bg-success/10 rounded-lg p-4">
               <p className="text-sm text-muted-foreground">Collected</p>
               <p className="text-2xl font-bold text-success">₹{(payments?.paid ?? 0).toLocaleString()}</p>

@@ -30,6 +30,7 @@ export default function CompanyDashboard() {
           <StatCard title="Total Students" value={stats?.students ?? 0} icon={<GraduationCap className="w-5 h-5" />} />
           {/* <StatCard title="Active Plans" value={stats?.active ?? 0} icon={<CreditCard className="w-5 h-5" />} /> */}
           <StatCard title="Total Revenue" value={`₹${(stats?.revenue ?? 0).toLocaleString()}`} icon={<TrendingUp className="w-5 h-5" />} />
+           <StatCard title="Total Claims" value={stats?.claims ?? 0} icon={<CreditCard className="w-5 h-5" />} />
         </div>
 
         <div className="grid lg:grid-cols-2 gap-6">

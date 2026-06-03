@@ -65,12 +65,14 @@ export default function AddStudent() {
 
   const { data: teacherPlanData, isLoading: planLoading } = useQuery({
     queryKey: ["teacher-assigned-plan"],
-    queryFn: api.teacherAssignedPlan,
+    queryFn: () => api.teacherAssignedPlan(),
   });
 
   const assignedPlanId = teacherPlanData?.selected_plan_tier ?? "basic";
   const assignedPlan = planOptions[assignedPlanId] ?? planOptions.basic;
   const amount = assignedPlan.amount;
+
+  const isPaidWithFees = form.payment_type === "paid_with_fees";
 
   const paidAmount =
     form.payment_type === "installment" ? amount / 2 : amount;
@@ -124,7 +126,7 @@ export default function AddStudent() {
       !form.username ||
       !form.password ||
       !form.payment_type ||
-      !form.payment_mode ||
+      (!isPaidWithFees && !form.payment_mode) ||
       !form.class_assigned
     ) {
       toast.error("Please fill all required fields");
@@ -150,17 +152,11 @@ export default function AddStudent() {
         parent_phone: form.parent_phone,
         class_assigned: form.class_assigned,
 
-        // Company Admin assigned plan only
         plan: assignedPlanId,
         plan_tier: assignedPlanId,
         amount: assignedPlan.amount,
 
-        // DB payment method enum:
-        // online / cash / card / upi / bank_transfer / cheque
-        payment_mode: form.payment_mode,
-
-        // Business payment flow:
-        // one_time / installment
+        payment_mode: isPaidWithFees ? "online" : form.payment_mode,
         payment_type: form.payment_type,
 
         paid_amount: paidAmount,
@@ -340,26 +336,33 @@ export default function AddStudent() {
                 {planLoading ? (
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    Loading assigned plan...
+                    Loading plan...
                   </div>
                 ) : (
-                 <>
-  <p className="font-semibold">{assignedPlan.label}</p>
-  <p className="text-xs text-muted-foreground mt-1">
-    This plan is assigned by Company Admin.
-  </p>
-</>
+                  <>
+                    <p className="font-semibold">{assignedPlan.label}</p>
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This plan is assigned by Company Admin.
+                    </p>
+                  </>
                 )}
               </div>
             </div>
-
-         
 
             <div>
               <Label>Payment Type *</Label>
               <Select
                 value={form.payment_type}
-                onValueChange={(v) => setForm({ ...form, payment_type: v })}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    payment_type: v,
+                    payment_mode:
+                      v === "paid_with_fees" ? "online" : form.payment_mode,
+                    install1: v === "installment" ? form.install1 : "",
+                    install2: v === "installment" ? form.install2 : "",
+                  })
+                }
               >
                 <SelectTrigger className="mt-1.5">
                   <SelectValue placeholder="Select payment type" />
@@ -370,6 +373,9 @@ export default function AddStudent() {
                   <SelectItem value="installment">
                     Installment Payment
                   </SelectItem>
+                  <SelectItem value="paid_with_fees">
+                    Paid with Fees
+                  </SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -378,10 +384,17 @@ export default function AddStudent() {
               <Label>Payment Mode *</Label>
               <Select
                 value={form.payment_mode}
+                disabled={isPaidWithFees}
                 onValueChange={(v) => setForm({ ...form, payment_mode: v })}
               >
                 <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select payment mode" />
+                  <SelectValue
+                    placeholder={
+                      isPaidWithFees
+                        ? "Not required when paid with fees"
+                        : "Select payment mode"
+                    }
+                  />
                 </SelectTrigger>
 
                 <SelectContent>
@@ -389,8 +402,17 @@ export default function AddStudent() {
                   <SelectItem value="cash">Cash</SelectItem>
                   <SelectItem value="card">Card</SelectItem>
                   <SelectItem value="upi">UPI</SelectItem>
+                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="cheque">Cheque</SelectItem>
                 </SelectContent>
               </Select>
+
+              {isPaidWithFees && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Payment mode is disabled because this amount is collected with
+                  school fees.
+                </p>
+              )}
             </div>
 
             {form.payment_type === "installment" && (

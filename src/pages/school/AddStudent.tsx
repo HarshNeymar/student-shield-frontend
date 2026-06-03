@@ -61,12 +61,13 @@ export default function SchoolAddStudent() {
   const assignedPlanId = schoolPlanData?.selected_plan_tier ?? "basic";
   const assignedPlan = planOptions[assignedPlanId] ?? planOptions.basic;
   const amount = assignedPlan.amount;
+const isPaidWithFees = form.payment_type === "paid_with_fees";
 
-  const paidAmount =
-    form.payment_type === "installment" ? amount / 2 : amount;
+const paidAmount =
+  form.payment_type === "installment" ? amount / 2 : amount;
 
-  const remainingAmount =
-    form.payment_type === "installment" ? amount / 2 : 0;
+const remainingAmount =
+  form.payment_type === "installment" ? amount / 2 : 0;
 
   useEffect(() => {
     if (assignedPlanId) {
@@ -99,18 +100,18 @@ export default function SchoolAddStudent() {
       return;
     }
 
-    if (
-      !form.full_name ||
-      !form.parent_phone ||
-      !form.username ||
-      !form.password ||
-      !form.class_assigned ||
-      !form.payment_type ||
-      !form.payment_mode
-    ) {
-      toast.error("Please fill all required fields");
-      return;
-    }
+  if (
+  !form.full_name ||
+  !form.parent_phone ||
+  !form.username ||
+  !form.password ||
+  !form.class_assigned ||
+  !form.payment_type ||
+  (!isPaidWithFees && !form.payment_mode)
+) {
+  toast.error("Please fill all required fields");
+  return;
+}
 
     if (
       form.payment_type === "installment" &&
@@ -135,8 +136,8 @@ export default function SchoolAddStudent() {
         plan_tier: assignedPlanId,
         amount: assignedPlan.amount,
 
-        payment_mode: form.payment_mode,
-        payment_type: form.payment_type,
+       payment_mode: isPaidWithFees ? "online" : form.payment_mode,
+payment_type: form.payment_type,
 
         paid_amount: paidAmount,
         remaining_amount: remainingAmount,
@@ -319,46 +320,65 @@ export default function SchoolAddStudent() {
               </div>
             </div>
 
-            <div>
-              <Label>Payment Type *</Label>
-              <Select
-                value={form.payment_type}
-                onValueChange={(v) => setForm({ ...form, payment_type: v })}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select payment type" />
-                </SelectTrigger>
+           <div>
+  <Label>Payment Type *</Label>
+  <Select
+    value={form.payment_type}
+    onValueChange={(v) =>
+      setForm({
+        ...form,
+        payment_type: v,
+        payment_mode: v === "paid_with_fees" ? "online" : form.payment_mode,
+        install1: v === "installment" ? form.install1 : "",
+        install2: v === "installment" ? form.install2 : "",
+      })
+    }
+  >
+    <SelectTrigger className="mt-1.5">
+      <SelectValue placeholder="Select payment type" />
+    </SelectTrigger>
 
-                <SelectContent>
-                  <SelectItem value="one_time">One-Time Payment</SelectItem>
-                  <SelectItem value="installment">
-                    Installment Payment
-                  </SelectItem>
-                  <SelectItem value="paid_with_fees">
-                    Paid with Fees
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <SelectContent>
+      <SelectItem value="one_time">One-Time Payment</SelectItem>
+      <SelectItem value="installment">Installment Payment</SelectItem>
+      <SelectItem value="paid_with_fees">Paid with Fees</SelectItem>
+    </SelectContent>
+  </Select>
+</div>
 
-            <div>
-              <Label>Payment Mode *</Label>
-              <Select
-                value={form.payment_mode}
-                onValueChange={(v) => setForm({ ...form, payment_mode: v })}
-              >
-                <SelectTrigger className="mt-1.5">
-                  <SelectValue placeholder="Select payment mode" />
-                </SelectTrigger>
+        <div>
+  <Label>Payment Mode *</Label>
+  <Select
+    value={form.payment_mode}
+    disabled={isPaidWithFees}
+    onValueChange={(v) => setForm({ ...form, payment_mode: v })}
+  >
+    <SelectTrigger className="mt-1.5">
+      <SelectValue
+        placeholder={
+          isPaidWithFees
+            ? "Not required when paid with fees"
+            : "Select payment mode"
+        }
+      />
+    </SelectTrigger>
 
-                <SelectContent>
-                  <SelectItem value="online">Online</SelectItem>
-                  <SelectItem value="cash">Cash</SelectItem>
-                  <SelectItem value="card">Card</SelectItem>
-                  <SelectItem value="upi">UPI</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+    <SelectContent>
+      <SelectItem value="online">Online</SelectItem>
+      <SelectItem value="cash">Cash</SelectItem>
+      <SelectItem value="card">Card</SelectItem>
+      <SelectItem value="upi">UPI</SelectItem>
+      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+      <SelectItem value="cheque">Cheque</SelectItem>
+    </SelectContent>
+  </Select>
+
+  {isPaidWithFees && (
+    <p className="text-xs text-muted-foreground mt-1">
+      Payment mode is disabled because this amount is collected with school fees.
+    </p>
+  )}
+</div>
 
             {form.payment_type === "installment" && (
               <div className="grid sm:grid-cols-2 gap-4 bg-muted/50 rounded-lg p-4">
