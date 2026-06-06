@@ -50,9 +50,9 @@ export default function SchoolDashboard() {
   <CardContent className="p-6 flex items-center justify-between">
     <div>
       <p className="text-muted-foreground font-medium">Assigned Plan</p>
-      <h3 className="text-2xl font-bold mt-2">
-        {school?.selected_plan_tier ?? "Basic Plan"}
-      </h3>
+      <h3 className="text-2xl font-bold mt-2 capitalize">
+  {(school?.selected_plan_tier ?? "basic").replace("_", " ")} Plan
+</h3>
     </div>
 
     <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
