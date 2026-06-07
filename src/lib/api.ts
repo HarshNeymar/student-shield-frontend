@@ -161,6 +161,11 @@ studentSessionRecordingUrl: (sessionId: string) =>
 
 studentMyClaims: () => request<any[]>("/api/student/my-claims"),
 
+deleteCompanySchool: (schoolId: string) =>
+  request<any>(`/api/company/schools/${schoolId}`, {
+    method: "DELETE",
+  }),
+
 // raiseStudentClaim: (body: any) =>
 //   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
 };

@@ -27,7 +27,7 @@ export default function TeacherDashboard() {
   const counts = dashboard?.counts;
 
   const total = students?.length ?? 0;
-  const active = students?.filter((s: any) => s.payment_status !== "failed").length ?? 0;
+  const active = dashboard?.plan?.name ?? '';
 
   return (
     <DashboardLayout role="teacher">
@@ -48,7 +48,7 @@ export default function TeacherDashboard() {
 
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <StatCard title="My Students" value={total} icon={<GraduationCap className="w-5 h-5" />} />
-          <StatCard title="Active Plans" value={active} icon={<ClipboardList className="w-5 h-5" />} />
+          <StatCard title="Active Plan" value={active} icon={<ClipboardList className="w-5 h-5" />} />
           <StatCard title="Wellness Reports" value={counts?.reports ?? 0} icon={<Heart className="w-5 h-5" />} />
           <StatCard title="Pending Claims" value={counts?.pendingClaims ?? 0} icon={<ClipboardList className="w-5 h-5" />} />
         </div>

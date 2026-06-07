@@ -34,6 +34,7 @@ import {
   GraduationCap,
   IndianRupee,
   Eye,
+  Trash2,
 } from "lucide-react";
 
 type SchoolRow = {
@@ -110,6 +111,34 @@ export default function SchoolsManage() {
     queryFn: () => api.companySchoolOverview(selectedSchoolId as string),
     enabled: !!selectedSchoolId,
   });
+
+  const deleteSchool = useMutation({
+  mutationFn: async (schoolId: string) => api.deleteCompanySchool(schoolId),
+
+  onSuccess: (_data, deletedSchoolId) => {
+    toast.success("School deleted successfully");
+
+    qc.invalidateQueries({ queryKey: ["schools-manage"] });
+
+    if (selectedSchoolId === deletedSchoolId) {
+      setSelectedSchoolId(null);
+    }
+  },
+
+  onError: (e: any) => {
+    toast.error(e.message ?? "Failed to delete school");
+  },
+});
+
+const handleDeleteSchool = (school: SchoolRow) => {
+  const confirmed = window.confirm(
+    `Are you sure you want to delete "${school.name}"?\n\nThis will delete school admins, teachers, students, enrollments, payments, claims, reports and related data. This action cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  deleteSchool.mutate(school.id);
+};
 
   const createSchool = useMutation({
     mutationFn: async () => api.createCompanySchool(form),
@@ -344,6 +373,18 @@ export default function SchoolsManage() {
                       <Eye className="w-4 h-4 mr-1" />
                       View Data
                     </Button>
+                      <Button
+    variant="destructive"
+    size="sm"
+    onClick={() => handleDeleteSchool(s)}
+    disabled={deleteSchool.isPending}
+  >
+    {deleteSchool.isPending ? (
+      <Loader2 className="w-4 h-4 animate-spin" />
+    ) : (
+      <Trash2 className="w-4 h-4" />
+    )}
+  </Button>
 
                     <Dialog
                       open={adminOpen === s.id}
