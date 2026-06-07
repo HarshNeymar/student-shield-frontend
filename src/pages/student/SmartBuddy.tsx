@@ -1,67 +1,54 @@
+import { useEffect } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Bot, PlayCircle, RotateCcw, TrendingUp } from "lucide-react";
-import { toast } from "sonner";
+import { Card, CardContent } from "@/components/ui/card";
+import { Loader2, Bot } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { api } from "@/lib/api";
+
+const SMART_BUDDY_URL =
+  import.meta.env.VITE_SMART_BUDDY_URL ||
+  "https://YOUR_DEPLOYED_SMART_BUDDY_URL_HERE";
 
 export default function SmartBuddy() {
-  const startBuddy = () => {
-    toast.success("Smart Buddy mentorship module will open here.");
-  };
+  const { data, isLoading } = useQuery({
+    queryKey: ["student-dashboard"],
+    queryFn: api.studentDashboard,
+  });
+
+  useEffect(() => {
+    if (!data) return;
+
+    const params = new URLSearchParams({
+      autoLogin: "true",
+      studentId: data?.profile?.id ?? "",
+      studentName: data?.profile?.full_name ?? "",
+      schoolName: data?.school?.name ?? "",
+      className: data?.profile?.class_assigned ?? "",
+      age: data?.profile?.age ? String(data.profile.age) : "",
+      phone: data?.profile?.parent_phone ?? data?.profile?.id ?? "",
+    });
+
+    window.location.href = `${SMART_BUDDY_URL}?${params.toString()}`;
+  }, [data]);
 
   return (
     <DashboardLayout role="student">
-      <div className="max-w-4xl mx-auto space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Meet Your Smart Buddy</h1>
-          <p className="text-sm text-muted-foreground">
-            Your mentorship and guided support space.
-          </p>
-        </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Bot className="w-6 h-6 text-primary" />
-              Smart Buddy Mentorship
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="space-y-6">
-            <div className="rounded-xl border bg-primary/5 p-6">
-              <h2 className="text-xl font-semibold">
-                Welcome to your Smart Buddy journey
-              </h2>
-              <p className="text-sm text-muted-foreground mt-2">
-                This area will integrate your already developed mentorship
-                program. You can connect the existing Smart Buddy module here.
-              </p>
+      <div className="flex items-center justify-center min-h-[60vh]">
+        <Card className="w-full max-w-md">
+          <CardContent className="p-8 text-center space-y-4">
+            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mx-auto">
+              <Bot className="w-8 h-8 text-primary" />
             </div>
 
-            <div className="grid md:grid-cols-3 gap-4">
-              <Button className="h-24 flex-col gap-2" onClick={startBuddy}>
-                <PlayCircle className="w-6 h-6" />
-                Start Smart Buddy
-              </Button>
+            <h1 className="text-xl font-bold">Opening Smart Buddy</h1>
 
-              <Button
-                variant="outline"
-                className="h-24 flex-col gap-2"
-                onClick={startBuddy}
-              >
-                <RotateCcw className="w-6 h-6" />
-                Continue Session
-              </Button>
+            <p className="text-sm text-muted-foreground">
+              Please wait while we open your Smart Buddy mentor.
+            </p>
 
-              <Button
-                variant="outline"
-                className="h-24 flex-col gap-2"
-                onClick={startBuddy}
-              >
-                <TrendingUp className="w-6 h-6" />
-                View Progress
-              </Button>
-            </div>
+            {(isLoading || !data) && (
+              <Loader2 className="w-6 h-6 animate-spin text-primary mx-auto" />
+            )}
           </CardContent>
         </Card>
       </div>
