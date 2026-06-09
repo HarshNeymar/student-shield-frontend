@@ -99,7 +99,7 @@ export default function StudentDashboard() {
             <div>
               <p className="text-sm text-muted-foreground">Payment Status</p>
               <p className="font-semibold">
-                {data?.enrollment?.payment_status ?? "—"}
+                {data?.enrollment?.payment_status ?? "—"}  ({data?.pendingInstallment?.due_date ?? "—"})
               </p>
             </div>
 

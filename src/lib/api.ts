@@ -165,7 +165,15 @@ deleteCompanySchool: (schoolId: string) =>
   request<any>(`/api/company/schools/${schoolId}`, {
     method: "DELETE",
   }),
+payTeacherStudentPendingFees: (studentId: string) =>
+  request<any>(`/api/teacher/students/${studentId}/pay-pending-fees`, {
+    method: "POST",
+  }),
 
+paySchoolStudentPendingFees: (studentId: string) =>
+  request<any>(`/api/school/students/${studentId}/pay-pending-fees`, {
+    method: "POST",
+  }),
 // raiseStudentClaim: (body: any) =>
 //   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
 };

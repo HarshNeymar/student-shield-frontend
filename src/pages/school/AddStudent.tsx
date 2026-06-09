@@ -17,7 +17,14 @@ import { CheckCircle, Loader2, MessageCircle, ReceiptText } from "lucide-react";
 import { api } from "@/lib/api";
 import { toast } from "sonner";
 
-const planOptions: Record<string, { id: string; label: string; amount: number }> = {
+const planOptions: Record<
+  string,
+  {
+    id: string;
+    label: string;
+    amount: number;
+  }
+> = {
   basic: {
     id: "basic",
     label: "Basic Plan",
@@ -55,19 +62,24 @@ export default function SchoolAddStudent() {
 
   const { data: schoolPlanData, isLoading: planLoading } = useQuery({
     queryKey: ["school-assigned-plan"],
-    queryFn: api.schoolAssignedPlan,
+    queryFn: () => api.schoolAssignedPlan(),
   });
 
   const assignedPlanId = schoolPlanData?.selected_plan_tier ?? "basic";
   const assignedPlan = planOptions[assignedPlanId] ?? planOptions.basic;
   const amount = assignedPlan.amount;
-const isPaidWithFees = form.payment_type === "paid_with_fees";
 
-const paidAmount =
-  form.payment_type === "installment" ? amount / 2 : amount;
+  const isPaidWithFees = form.payment_type === "paid_with_fees";
 
-const remainingAmount =
-  form.payment_type === "installment" ? amount / 2 : 0;
+  const splitInstallmentAmount = Number((amount / 2).toFixed(2));
+
+  const paidAmount =
+    form.payment_type === "installment" ? splitInstallmentAmount : amount;
+
+  const remainingAmount =
+    form.payment_type === "installment"
+      ? Number((amount - splitInstallmentAmount).toFixed(2))
+      : 0;
 
   useEffect(() => {
     if (assignedPlanId) {
@@ -100,18 +112,18 @@ const remainingAmount =
       return;
     }
 
-  if (
-  !form.full_name ||
-  !form.parent_phone ||
-  !form.username ||
-  !form.password ||
-  !form.class_assigned ||
-  !form.payment_type ||
-  (!isPaidWithFees && !form.payment_mode)
-) {
-  toast.error("Please fill all required fields");
-  return;
-}
+    if (
+      !form.full_name ||
+      !form.parent_phone ||
+      !form.username ||
+      !form.password ||
+      !form.class_assigned ||
+      !form.payment_type ||
+      (!isPaidWithFees && !form.payment_mode)
+    ) {
+      toast.error("Please fill all required fields");
+      return;
+    }
 
     if (
       form.payment_type === "installment" &&
@@ -134,10 +146,10 @@ const remainingAmount =
 
         plan: assignedPlanId,
         plan_tier: assignedPlanId,
-        amount: assignedPlan.amount,
+        amount,
 
-       payment_mode: isPaidWithFees ? "online" : form.payment_mode,
-payment_type: form.payment_type,
+        payment_mode: isPaidWithFees ? "online" : form.payment_mode,
+        payment_type: form.payment_type,
 
         paid_amount: paidAmount,
         remaining_amount: remainingAmount,
@@ -170,6 +182,7 @@ payment_type: form.payment_type,
                 <h2 className="text-2xl font-bold">
                   Student Enrolled Successfully
                 </h2>
+
                 <p className="text-muted-foreground mt-2">
                   Login email:{" "}
                   <span className="font-mono">
@@ -183,9 +196,11 @@ payment_type: form.payment_type,
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <ReceiptText className="w-3 h-3" /> Receipt
                   </p>
+
                   <p className="font-semibold">
                     {enrolled.receipt?.receipt_no ?? "Generated"}
                   </p>
+
                   <p className="text-sm">
                     Paid ₹
                     {Number(
@@ -202,9 +217,11 @@ payment_type: form.payment_type,
                   <p className="text-xs text-muted-foreground flex items-center gap-1">
                     <MessageCircle className="w-3 h-3" /> WhatsApp
                   </p>
+
                   <p className="font-semibold">
                     {enrolled.whatsapp?.status ?? "prepared"}
                   </p>
+
                   <p className="text-sm">
                     Message includes receipt, app link and login details.
                   </p>
@@ -314,74 +331,102 @@ payment_type: form.payment_type,
                 ) : (
                   <>
                     <p className="font-semibold">{assignedPlan.label}</p>
-                 
+                    <p className="text-xs text-muted-foreground mt-1">
+                      This plan is assigned by Company Admin.
+                    </p>
                   </>
                 )}
               </div>
             </div>
 
-           <div>
-  <Label>Payment Type *</Label>
-  <Select
-    value={form.payment_type}
-    onValueChange={(v) =>
-      setForm({
-        ...form,
-        payment_type: v,
-        payment_mode: v === "paid_with_fees" ? "online" : form.payment_mode,
-        install1: v === "installment" ? form.install1 : "",
-        install2: v === "installment" ? form.install2 : "",
-      })
-    }
-  >
-    <SelectTrigger className="mt-1.5">
-      <SelectValue placeholder="Select payment type" />
-    </SelectTrigger>
+            <div>
+              <Label>Payment Type *</Label>
+              <Select
+                value={form.payment_type}
+                onValueChange={(v) =>
+                  setForm({
+                    ...form,
+                    payment_type: v,
+                    payment_mode:
+                      v === "paid_with_fees" ? "online" : form.payment_mode,
+                    install1: v === "installment" ? form.install1 : "",
+                    install2: v === "installment" ? form.install2 : "",
+                  })
+                }
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue placeholder="Select payment type" />
+                </SelectTrigger>
 
-    <SelectContent>
-      <SelectItem value="one_time">One-Time Payment</SelectItem>
-      <SelectItem value="installment">Installment Payment</SelectItem>
-      <SelectItem value="paid_with_fees">Paid with Fees</SelectItem>
-    </SelectContent>
-  </Select>
-</div>
+                <SelectContent>
+                  <SelectItem value="one_time">One-Time Payment</SelectItem>
+                  <SelectItem value="installment">
+                    Installment Payment
+                  </SelectItem>
+                  <SelectItem value="paid_with_fees">
+                    Paid with Fees
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
 
-        <div>
-  <Label>Payment Mode *</Label>
-  <Select
-    value={form.payment_mode}
-    disabled={isPaidWithFees}
-    onValueChange={(v) => setForm({ ...form, payment_mode: v })}
-  >
-    <SelectTrigger className="mt-1.5">
-      <SelectValue
-        placeholder={
-          isPaidWithFees
-            ? "Not required when paid with fees"
-            : "Select payment mode"
-        }
-      />
-    </SelectTrigger>
+            <div>
+              <Label>Payment Mode *</Label>
+              <Select
+                value={form.payment_mode}
+                disabled={isPaidWithFees}
+                onValueChange={(v) => setForm({ ...form, payment_mode: v })}
+              >
+                <SelectTrigger className="mt-1.5">
+                  <SelectValue
+                    placeholder={
+                      isPaidWithFees
+                        ? "Not required when paid with fees"
+                        : "Select payment mode"
+                    }
+                  />
+                </SelectTrigger>
 
-    <SelectContent>
-      <SelectItem value="online">Online</SelectItem>
-      <SelectItem value="cash">Cash</SelectItem>
-      <SelectItem value="card">Card</SelectItem>
-      <SelectItem value="upi">UPI</SelectItem>
-      <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
-      <SelectItem value="cheque">Cheque</SelectItem>
-    </SelectContent>
-  </Select>
+                <SelectContent>
+                  <SelectItem value="online">Online</SelectItem>
+                  <SelectItem value="cash">Cash</SelectItem>
+                  <SelectItem value="card">Card</SelectItem>
+                  <SelectItem value="upi">UPI</SelectItem>
+                  <SelectItem value="bank_transfer">Bank Transfer</SelectItem>
+                  <SelectItem value="cheque">Cheque</SelectItem>
+                </SelectContent>
+              </Select>
 
-  {isPaidWithFees && (
-    <p className="text-xs text-muted-foreground mt-1">
-      Payment mode is disabled because this amount is collected with school fees.
-    </p>
-  )}
-</div>
+              {isPaidWithFees && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  Payment mode is disabled because this amount is collected with
+                  school fees.
+                </p>
+              )}
+            </div>
 
             {form.payment_type === "installment" && (
               <div className="grid sm:grid-cols-2 gap-4 bg-muted/50 rounded-lg p-4">
+                <div className="sm:col-span-2 rounded-lg border bg-background p-3">
+                  <p className="text-sm font-medium">Installment Split</p>
+
+                  <div className="grid sm:grid-cols-2 gap-3 mt-2 text-sm">
+                    <div>
+                      <p className="text-muted-foreground">First Installment</p>
+                      <p className="font-semibold">
+                        ₹{paidAmount.toLocaleString()}
+                      </p>
+                    </div>
+
+                    <div>
+                      <p className="text-muted-foreground">Second Installment</p>
+                      <p className="font-semibold">
+                        ₹{remainingAmount.toLocaleString()}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
                 <div>
                   <Label>First Installment Date</Label>
                   <Input

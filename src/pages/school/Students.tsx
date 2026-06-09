@@ -1,6 +1,10 @@
 import { useState } from "react";
 import DashboardLayout from "@/components/layout/DashboardLayout";
-import { useQuery } from "@tanstack/react-query";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
 import {
@@ -19,17 +23,54 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
+
+function formatDate(date?: string | null) {
+  if (!date) return "—";
+  return new Date(date).toLocaleDateString();
+}
+
+function formatText(value?: string | null) {
+  if (!value) return "—";
+  return value.replaceAll("_", " ");
+}
 
 export default function SchoolStudents() {
   const { profile } = useAuth();
   const schoolId = profile?.school_id;
+  const qc = useQueryClient();
 
   const [search, setSearch] = useState("");
+  const [payingStudentId, setPayingStudentId] = useState<string | null>(null);
 
   const { data: students, isLoading } = useQuery({
     queryKey: ["school-students", schoolId],
     enabled: !!schoolId,
     queryFn: () => api.schoolStudents(schoolId!),
+  });
+
+  const payPendingFees = useMutation({
+    mutationFn: (studentId: string) =>
+      api.paySchoolStudentPendingFees(studentId),
+
+    onMutate: (studentId: string) => {
+      setPayingStudentId(studentId);
+    },
+
+    onSuccess: () => {
+      toast.success("Pending fees paid successfully");
+      qc.invalidateQueries({ queryKey: ["school-students", schoolId] });
+      qc.invalidateQueries({ queryKey: ["school-dashboard"] });
+    },
+
+    onError: (e: any) => {
+      toast.error(e.message ?? "Failed to pay pending fees");
+    },
+
+    onSettled: () => {
+      setPayingStudentId(null);
+    },
   });
 
   const filteredStudents = (students ?? []).filter((student: any) => {
@@ -43,6 +84,8 @@ export default function SchoolStudents() {
       student.payment_status,
       student.plan,
       student.plan_tier,
+      student.pending_amount,
+      student.pending_due_date,
     ]
       .filter(Boolean)
       .join(" ")
@@ -107,87 +150,146 @@ export default function SchoolStudents() {
                       <th className="text-left p-3 font-semibold">
                         Payment Status
                       </th>
+                      <th className="text-left p-3 font-semibold">
+                        Pending Fees
+                      </th>
+                      <th className="text-left p-3 font-semibold">Action</th>
                     </tr>
                   </thead>
 
                   <tbody>
                     {filteredStudents.length ? (
-                      filteredStudents.map((student: any, index: number) => (
-                        <tr
-                          key={student.id ?? student.email}
-                          className="border-t"
-                        >
-                          <td className="p-3 text-muted-foreground">
-                            {index + 1}
-                          </td>
+                      filteredStudents.map((student: any, index: number) => {
+                        const pendingPayment = student.pending_payment ?? null;
 
-                          <td className="p-3">
-                            <div className="flex items-center gap-2">
-                              <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
-                                <User className="w-4 h-4 text-primary" />
+                        const pendingAmount =
+                          student.pending_amount ??
+                          pendingPayment?.amount ??
+                          null;
+
+                        const pendingDueDate =
+                          student.pending_due_date ??
+                          pendingPayment?.due_date ??
+                          null;
+
+                        const isThisStudentPaying =
+                          payingStudentId === student.id;
+
+                        return (
+                          <tr
+                            key={student.id ?? student.email}
+                            className="border-t"
+                          >
+                            <td className="p-3 text-muted-foreground">
+                              {index + 1}
+                            </td>
+
+                            <td className="p-3">
+                              <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                                  <User className="w-4 h-4 text-primary" />
+                                </div>
+
+                                <div>
+                                  <p className="font-medium text-foreground">
+                                    {student.full_name ?? "—"}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Student
+                                  </p>
+                                </div>
                               </div>
+                            </td>
 
-                              <div>
-                                <p className="font-medium text-foreground">
-                                  {student.full_name ?? "—"}
-                                </p>
-                                <p className="text-xs text-muted-foreground">
-                                  Student
-                                </p>
-                              </div>
-                            </div>
-                          </td>
+                            <td className="p-3">
+                              {student.email ? (
+                                <span className="flex items-center gap-2">
+                                  <Mail className="w-4 h-4 text-muted-foreground" />
+                                  {student.email}
+                                </span>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
 
-                          <td className="p-3">
-                            {student.email ? (
-                              <span className="flex items-center gap-2">
-                                <Mail className="w-4 h-4 text-muted-foreground" />
-                                {student.email}
+                            <td className="p-3">
+                              <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                                <BookOpen className="w-3 h-3" />
+                                {student.class_assigned ?? "—"}
                               </span>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
+                            </td>
 
-                          <td className="p-3">
-                            <span className="inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-                              <BookOpen className="w-3 h-3" />
-                              {student.class_assigned ?? "—"}
-                            </span>
-                          </td>
+                            <td className="p-3">{student.age ?? "—"}</td>
 
-                          <td className="p-3">{student.age ?? "—"}</td>
+                            <td className="p-3">
+                              {student.parent_phone ? (
+                                <span className="flex items-center gap-2">
+                                  <Phone className="w-4 h-4 text-muted-foreground" />
+                                  {student.parent_phone}
+                                </span>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
 
-                          <td className="p-3">
-                            {student.parent_phone ? (
-                              <span className="flex items-center gap-2">
-                                <Phone className="w-4 h-4 text-muted-foreground" />
-                                {student.parent_phone}
+                            <td className="p-3">
+                              {student.teacher_name ?? "—"}
+                            </td>
+
+                            <td className="p-3 capitalize">
+                              {formatText(student.plan_tier ?? student.plan)}
+                            </td>
+
+                            <td className="p-3">
+                              <span className="rounded-full bg-muted px-2 py-1 text-xs capitalize">
+                                {formatText(student.payment_status)}
                               </span>
-                            ) : (
-                              "—"
-                            )}
-                          </td>
+                            </td>
 
-                          <td className="p-3">
-                            {student.teacher_name ?? "—"}
-                          </td>
+                            <td className="p-3">
+                              {pendingAmount ? (
+                                <div>
+                                  <p className="font-medium">
+                                    ₹{Number(pendingAmount).toLocaleString()}
+                                  </p>
+                                  <p className="text-xs text-muted-foreground">
+                                    Due: {formatDate(pendingDueDate)}
+                                  </p>
+                                </div>
+                              ) : (
+                                "—"
+                              )}
+                            </td>
 
-                          <td className="p-3">
-                            {student.plan_tier ?? student.plan ?? "—"}
-                          </td>
-
-                          <td className="p-3">
-                            <span className="rounded-full bg-muted px-2 py-1 text-xs">
-                              {student.payment_status ?? "—"}
-                            </span>
-                          </td>
-                        </tr>
-                      ))
+                            <td className="p-3">
+                              {pendingPayment ? (
+                                <Button
+                                  size="sm"
+                                  onClick={() =>
+                                    payPendingFees.mutate(student.id)
+                                  }
+                                  disabled={isThisStudentPaying}
+                                >
+                                  {isThisStudentPaying && (
+                                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                                  )}
+                                  {isThisStudentPaying
+                                    ? "Paying..."
+                                    : "Pay Pending Fees"}
+                                </Button>
+                              ) : (
+                                <span className="text-xs text-muted-foreground">
+                                  No pending
+                                </span>
+                              )}
+                            </td>
+                          </tr>
+                        );
+                      })
                     ) : (
                       <tr>
                         <td
-                          colSpan={9}
+                          colSpan={11}
                           className="p-6 text-center text-muted-foreground"
                         >
                           {search

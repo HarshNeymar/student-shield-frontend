@@ -74,11 +74,15 @@ export default function AddStudent() {
 
   const isPaidWithFees = form.payment_type === "paid_with_fees";
 
-  const paidAmount =
-    form.payment_type === "installment" ? amount / 2 : amount;
+const splitInstallmentAmount = Number((amount / 2).toFixed(2));
 
-  const remainingAmount =
-    form.payment_type === "installment" ? amount / 2 : 0;
+const paidAmount =
+  form.payment_type === "installment" ? splitInstallmentAmount : amount;
+
+const remainingAmount =
+  form.payment_type === "installment"
+    ? Number((amount - splitInstallmentAmount).toFixed(2))
+    : 0;
 
   useEffect(() => {
     if (profile?.class_assigned) {
@@ -415,41 +419,53 @@ export default function AddStudent() {
               )}
             </div>
 
-            {form.payment_type === "installment" && (
-              <div className="grid sm:grid-cols-2 gap-4 bg-muted/50 rounded-lg p-4">
-                <div>
-                  <Label>First Installment Date</Label>
-                  <Input
-                    type="date"
-                    value={form.install1}
-                    onChange={(e) =>
-                      setForm({ ...form, install1: e.target.value })
-                    }
-                    className="mt-1.5"
-                  />
-                </div>
+         {form.payment_type === "installment" && (
+  <div className="grid sm:grid-cols-2 gap-4 bg-muted/50 rounded-lg p-4">
+    <div className="sm:col-span-2 rounded-lg border bg-background p-3">
+      <p className="text-sm font-medium">Installment Split</p>
 
-                <div>
-                  <Label>Second Installment Date</Label>
-                  <Input
-                    type="date"
-                    value={form.install2}
-                    onChange={(e) =>
-                      setForm({ ...form, install2: e.target.value })
-                    }
-                    className="mt-1.5"
-                  />
-                </div>
+      <div className="grid sm:grid-cols-2 gap-3 mt-2 text-sm">
+        <div>
+          <p className="text-muted-foreground">First Installment</p>
+          <p className="font-semibold">
+            ₹{paidAmount.toLocaleString()}
+          </p>
+        </div>
 
-                <p className="sm:col-span-2 text-sm text-muted-foreground">
-                  Installment amount:{" "}
-                  <span className="font-semibold">
-                    ₹{(amount / 2).toLocaleString()}
-                  </span>{" "}
-                  each
-                </p>
-              </div>
-            )}
+        <div>
+          <p className="text-muted-foreground">Second Installment</p>
+          <p className="font-semibold">
+            ₹{remainingAmount.toLocaleString()}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <Label>First Installment Date</Label>
+      <Input
+        type="date"
+        value={form.install1}
+        onChange={(e) =>
+          setForm({ ...form, install1: e.target.value })
+        }
+        className="mt-1.5"
+      />
+    </div>
+
+    <div>
+      <Label>Second Installment Date</Label>
+      <Input
+        type="date"
+        value={form.install2}
+        onChange={(e) =>
+          setForm({ ...form, install2: e.target.value })
+        }
+        className="mt-1.5"
+      />
+    </div>
+  </div>
+)}
           </CardContent>
         </Card>
 
