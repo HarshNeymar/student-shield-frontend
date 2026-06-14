@@ -111,7 +111,7 @@ export default function Login() {
         <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")}>
           <TabsList className="grid grid-cols-2 w-full mb-6">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
-            <TabsTrigger value="signup">Sign Up</TabsTrigger>
+            {/* <TabsTrigger value="signup">Sign Up</TabsTrigger> */}
           </TabsList>
 
           <RoleGrid value={selectedRole} onChange={setSelectedRole} />
@@ -156,7 +156,7 @@ export default function Login() {
             </form>
           </TabsContent>
 
-          <TabsContent value="signup" className="mt-6">
+          {/* <TabsContent value="signup" className="mt-6">
             <form onSubmit={handleSignUp} className="space-y-4">
               <div>
                 <Label>Full Name</Label>
@@ -196,7 +196,7 @@ export default function Login() {
                 Sign Up as {roleLabel(selectedRole)}
               </Button>
             </form>
-          </TabsContent>
+          </TabsContent> */}
         </Tabs>
 
         <div className="relative my-6">
