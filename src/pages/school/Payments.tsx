@@ -52,7 +52,7 @@ export default function SchoolPayments() {
           <>
             <div className="grid sm:grid-cols-3 gap-4">
               <StatCard title="Enrollments" value={enrollments.length} icon={<CreditCard className="w-5 h-5" />} />
-              <StatCard title="Collected" value={`₹${(data?.paid ?? 0).toLocaleString()}`} icon={<CheckCircle className="w-5 h-5" />} />
+              {/* <StatCard title="Collected" value={`₹${(data?.paid ?? 0).toLocaleString()}`} icon={<CheckCircle className="w-5 h-5" />} /> */}
               <StatCard title="Pending" value={`₹${(data?.pending ?? 0).toLocaleString()}`} icon={<Clock className="w-5 h-5" />} />
             </div>
 
