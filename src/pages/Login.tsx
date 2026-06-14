@@ -109,7 +109,7 @@ export default function Login() {
 
       <div className="w-full max-w-xl bg-card rounded-2xl p-6 sm:p-8 shadow-2xl">
         <Tabs value={tab} onValueChange={(v) => setTab(v as "signin" | "signup")}>
-          <TabsList className="grid grid-cols-2 w-full mb-6">
+          <TabsList className="grid grid-cols-1 w-full mb-6">
             <TabsTrigger value="signin">Sign In</TabsTrigger>
             {/* <TabsTrigger value="signup">Sign Up</TabsTrigger> */}
           </TabsList>
