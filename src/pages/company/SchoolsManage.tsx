@@ -343,9 +343,9 @@ const handleDeleteSchool = (school: SchoolRow) => {
     </SelectTrigger>
 
     <SelectContent>
-      <SelectItem value="basic">Basic Plan — ₹400 yearly</SelectItem>
-      <SelectItem value="standard">Standard Plan — ₹800 yearly</SelectItem>
-      <SelectItem value="premium">Premium Plan — ₹1200 yearly</SelectItem>
+      <SelectItem value="basic">Basic Plan — ₹399 yearly</SelectItem>
+      <SelectItem value="standard">Standard Plan — ₹799 yearly</SelectItem>
+      <SelectItem value="premium">Premium Plan — ₹1199 yearly</SelectItem>
     </SelectContent>
   </Select>
 </div>

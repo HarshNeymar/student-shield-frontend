@@ -7,17 +7,17 @@ import { useQuery } from "@tanstack/react-query";
 const planDetails: Record<string, any> = {
   basic: {
     name: "Basic Plan",
-    amount: 400,
+    amount: 399,
     description: "Basic yearly Student Shield protection",
   },
   standard: {
     name: "Standard Plan",
-    amount: 800,
+    amount: 799,
     description: "Standard yearly Student Shield protection",
   },
   premium: {
     name: "Premium Plan",
-    amount: 1200,
+    amount: 1199,
     description: "Premium yearly Student Shield protection",
   },
 };

@@ -105,10 +105,25 @@ export default function DashboardLayout({ children, role, userName }: DashboardL
         )}
       >
         {/* Logo */}
-        <div className="flex items-center gap-3 px-4 h-16 border-b border-sidebar-border">
-          <Shield className="w-8 h-8 text-sidebar-primary flex-shrink-0" />
-          {!collapsed && <span className="font-bold text-lg">Student Shield</span>}
-        </div>
+<div className="h-20 border-b border-sidebar-border flex items-center justify-center px-4">
+  {!collapsed ? (
+    <div className="w-full h-16 rounded-2xl bg-white flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden px-3">
+      <img
+        src="/logo.png"
+        alt="Student Shield"
+        className="h-11 w-auto object-contain"
+      />
+    </div>
+  ) : (
+    <div className="w-12 h-12 rounded-xl bg-white flex items-center justify-center shadow-sm border border-slate-200 overflow-hidden">
+      <img
+        src="/logo.png"
+        alt="Student Shield"
+        className="w-10 h-10 object-contain"
+      />
+    </div>
+  )}
+</div>
 
         {/* Nav */}
         <nav className="flex-1 py-4 px-3 space-y-1 overflow-y-auto">

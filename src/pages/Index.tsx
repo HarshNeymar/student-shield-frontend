@@ -4,9 +4,9 @@ import { Shield, School, Users, GraduationCap, Heart, BookOpen, CheckCircle, Arr
 import heroImage from "@/assets/hero-illustration.jpg";
 
 const plans = [
-  { name: "Basic Plan", price: "₹400", period: "/yearly", features: ["Accidental Protection", "Student ID Card", "Basic Wellness Reports", "Email Support"], popular: false },
-  { name: "Standard Plan", price: "₹800", period: "/yearly", features: ["Everything in Basic", "Future Financial Security", "Counseling Sessions", "Priority Support", "Smart Buddy Access"], popular: true },
-  { name: "Premium Plan", price: "₹1200", period: "/yearly", features: ["Everything in Standard", "Full Student Protection", "Unlimited Sessions", "Dedicated Counselor", "Parent Dashboard", "24/7 Support"], popular: false },
+  { name: "Basic Plan", price: "₹399", period: "/yearly", features: ["Accidental Protection", "Student ID Card", "Basic Wellness Reports", "Email Support"], popular: false },
+  { name: "Standard Plan", price: "₹799", period: "/yearly", features: ["Everything in Basic", "Future Financial Security", "Counseling Sessions", "Priority Support", "Smart Buddy Access"], popular: true },
+  { name: "Premium Plan", price: "₹1199", period: "/yearly", features: ["Everything in Standard", "Full Student Protection", "Unlimited Sessions", "Dedicated Counselor", "Parent Dashboard", "24/7 Support"], popular: false },
 ];
 
 const features = [

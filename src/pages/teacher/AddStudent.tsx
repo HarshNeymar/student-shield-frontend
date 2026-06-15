@@ -29,17 +29,17 @@ const planOptions: Record<
   basic: {
     id: "basic",
     label: "Basic Plan",
-    amount: 400,
+    amount: 399,
   },
   standard: {
     id: "standard",
     label: "Standard Plan",
-    amount: 800,
+    amount: 799,
   },
   premium: {
     id: "premium",
     label: "Premium Plan",
-    amount: 1200,
+    amount: 1199,
   },
 };
 
