@@ -206,39 +206,46 @@ paySchoolStudentPendingFees: (studentId: string) =>
   request<any>(`/api/school/students/${studentId}/pay-pending-fees`, {
     method: "POST",
   }),
-    createStudentSmartBuddyLaunch: () =>
-    request<SmartBuddyLaunchResponse>("/api/smart-buddy/launch", {
+  createStudentSmartBuddyLaunch: () =>
+  request<SmartBuddyLaunchResponse>(
+    "/api/student/smart-buddy/launch",
+    {
       method: "POST",
-    }),
+    }
+  ),
 
-  studentSmartBuddyProfile: () =>
-    request<SmartBuddyProfileResponse>("/api/smart-buddy/profile"),
+studentSmartBuddyProfile: () =>
+  request<SmartBuddyProfileResponse>(
+    "/api/student/smart-buddy/profile"
+  ),
 
-  saveStudentSmartBuddyProfile: (body: {
-    form_data?: Record<string, unknown>;
-    assessment_data?: Record<string, unknown>;
-  }) =>
-    request<any>("/api/smart-buddy/profile", {
-      method: "PUT",
-      body: JSON.stringify(body),
-    }),
+saveStudentSmartBuddyProfile: (body: {
+  form_data?: Record<string, unknown>;
+  assessment_data?: Record<string, unknown>;
+}) =>
+  request<any>("/api/student/smart-buddy/profile", {
+    method: "PUT",
+    body: JSON.stringify(body),
+  }),
 
-  studentSmartBuddyReports: () =>
-    request<SmartBuddyReport[]>("/api/smart-buddy/reports"),
+studentSmartBuddyReports: () =>
+  request<SmartBuddyReport[]>(
+    "/api/student/smart-buddy/reports"
+  ),
 
-  uploadStudentSmartBuddyReport: (formData: FormData) =>
-    request<{ success: boolean; report: SmartBuddyReport }>(
-      "/api/smart-buddy/reports",
-      {
-        method: "POST",
-        body: formData,
-      }
-    ),
+uploadStudentSmartBuddyReport: (formData: FormData) =>
+  request<{ success: boolean; report: SmartBuddyReport }>(
+    "/api/student/smart-buddy/reports",
+    {
+      method: "POST",
+      body: formData,
+    }
+  ),
 
-  studentSmartBuddyReportDownload: (reportId: string) =>
-    request<SmartBuddyReport>(
-      `/api/smart-buddy/reports/${reportId}/download`
-    ),
+studentSmartBuddyReportDownload: (reportId: string) =>
+  request<SmartBuddyReport>(
+    `/api/student/smart-buddy/reports/${reportId}/download`
+  ),
 // raiseStudentClaim: (body: any) =>
 //   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
 };
