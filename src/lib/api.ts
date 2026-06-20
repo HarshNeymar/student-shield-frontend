@@ -207,28 +207,28 @@ paySchoolStudentPendingFees: (studentId: string) =>
     method: "POST",
   }),
     createStudentSmartBuddyLaunch: () =>
-    request<SmartBuddyLaunchResponse>("/api/student/smart-buddy/launch", {
+    request<SmartBuddyLaunchResponse>("/api/smart-buddy/launch", {
       method: "POST",
     }),
 
   studentSmartBuddyProfile: () =>
-    request<SmartBuddyProfileResponse>("/api/student/smart-buddy/profile"),
+    request<SmartBuddyProfileResponse>("/api/smart-buddy/profile"),
 
   saveStudentSmartBuddyProfile: (body: {
     form_data?: Record<string, unknown>;
     assessment_data?: Record<string, unknown>;
   }) =>
-    request<any>("/api/student/smart-buddy/profile", {
+    request<any>("/api/smart-buddy/profile", {
       method: "PUT",
       body: JSON.stringify(body),
     }),
 
   studentSmartBuddyReports: () =>
-    request<SmartBuddyReport[]>("/api/student/smart-buddy/reports"),
+    request<SmartBuddyReport[]>("/api/smart-buddy/reports"),
 
   uploadStudentSmartBuddyReport: (formData: FormData) =>
     request<{ success: boolean; report: SmartBuddyReport }>(
-      "/api/student/smart-buddy/reports",
+      "/api/smart-buddy/reports",
       {
         method: "POST",
         body: formData,
@@ -237,7 +237,7 @@ paySchoolStudentPendingFees: (studentId: string) =>
 
   studentSmartBuddyReportDownload: (reportId: string) =>
     request<SmartBuddyReport>(
-      `/api/student/smart-buddy/reports/${reportId}/download`
+      `/api/smart-buddy/reports/${reportId}/download`
     ),
 // raiseStudentClaim: (body: any) =>
 //   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
