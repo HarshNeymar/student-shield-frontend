@@ -31,6 +31,38 @@ async function request<T>(path: string, options: RequestInit = {}): Promise<T> {
   return payload as T;
 }
 
+export type SmartBuddyLaunchResponse = {
+  launch_token: string;
+  launch_url: string | null;
+  expires_at: string;
+  student: {
+    id: string;
+    full_name: string;
+    school_id: string;
+  };
+};
+
+export type SmartBuddyReport = {
+  id: string;
+  report_title: string;
+  file_name: string;
+  mime_type: string;
+  file_size: number | null;
+  generated_at: string;
+  created_at: string;
+  download_url: string | null;
+};
+
+export type SmartBuddyProfileResponse = {
+  student: any;
+  school: any;
+  saved_profile: {
+    form_data: Record<string, unknown>;
+    assessment_data: Record<string, unknown>;
+    created_at: string | null;
+    updated_at: string | null;
+  };
+};
 
 
 async function requestForm<T>(path: string, formData: FormData): Promise<T> {
@@ -174,6 +206,39 @@ paySchoolStudentPendingFees: (studentId: string) =>
   request<any>(`/api/school/students/${studentId}/pay-pending-fees`, {
     method: "POST",
   }),
+    createStudentSmartBuddyLaunch: () =>
+    request<SmartBuddyLaunchResponse>("/api/student/smart-buddy/launch", {
+      method: "POST",
+    }),
+
+  studentSmartBuddyProfile: () =>
+    request<SmartBuddyProfileResponse>("/api/student/smart-buddy/profile"),
+
+  saveStudentSmartBuddyProfile: (body: {
+    form_data?: Record<string, unknown>;
+    assessment_data?: Record<string, unknown>;
+  }) =>
+    request<any>("/api/student/smart-buddy/profile", {
+      method: "PUT",
+      body: JSON.stringify(body),
+    }),
+
+  studentSmartBuddyReports: () =>
+    request<SmartBuddyReport[]>("/api/student/smart-buddy/reports"),
+
+  uploadStudentSmartBuddyReport: (formData: FormData) =>
+    request<{ success: boolean; report: SmartBuddyReport }>(
+      "/api/student/smart-buddy/reports",
+      {
+        method: "POST",
+        body: formData,
+      }
+    ),
+
+  studentSmartBuddyReportDownload: (reportId: string) =>
+    request<SmartBuddyReport>(
+      `/api/student/smart-buddy/reports/${reportId}/download`
+    ),
 // raiseStudentClaim: (body: any) =>
 //   requestForm<any>("/api/student/claims", buildClaimFormData(body)),
 };

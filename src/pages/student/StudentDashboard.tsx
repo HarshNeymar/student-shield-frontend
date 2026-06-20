@@ -128,11 +128,11 @@ export default function StudentDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              <p className="text-sm text-muted-foreground">
-                Continue your mentorship journey.
-              </p>
+             <p className="text-sm text-muted-foreground">
+  Continue your mentorship journey and access saved Smart Buddy reports.
+</p>
               <Link to="/student/smart-buddy">
-                <Button className="w-full">Start Smart Buddy</Button>
+                <Button className="w-full">Open Smart Buddy</Button>
               </Link>
             </CardContent>
           </Card>
